@@ -7,7 +7,7 @@
 namespace GLShaders {
 
 const char g_vertex_shader[] = R"(
-#version 120 core
+#version 130
 
 in vec2 vert_position;
 in vec2 vert_tex_coord;
@@ -30,7 +30,7 @@ void main() {
 )";
 
 const char g_fragment_shader[] = R"(
-#version 120 core
+#version 130
 
 in vec2 frag_tex_coord;
 out vec4 color;
