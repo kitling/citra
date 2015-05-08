@@ -1,5 +1,5 @@
 set(SRCS
-            renderer_opengl/generated/gl_3_2_core.c
+            renderer_opengl/generated/gl_2_1_core.c
             renderer_opengl/renderer_opengl.cpp
             renderer_opengl/gl_shader_util.cpp
             debug_utils/debug_utils.cpp
@@ -14,7 +14,7 @@ set(SRCS
 
 set(HEADERS
             debug_utils/debug_utils.h
-            renderer_opengl/generated/gl_3_2_core.h
+            renderer_opengl/generated/gl_2_1_core.h
             renderer_opengl/gl_shader_util.h
             renderer_opengl/gl_shaders.h
             renderer_opengl/renderer_opengl.h
