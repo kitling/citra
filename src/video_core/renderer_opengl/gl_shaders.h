@@ -8,9 +8,9 @@ namespace GLShaders {
 
 const char g_vertex_shader[] = R"(
 #version 120
-in vec2 vert_position;
-in vec2 vert_tex_coord;
-varying out vec2 frag_tex_coord;
+attribute vec2 vert_position;
+attribute vec2 vert_tex_coord;
+varying vec2 frag_tex_coord;
 // This is a truncated 3x3 matrix for 2D transformations:
 // The upper-left 2x2 submatrix performs scaling/rotation/mirroring.
 // The third column performs translation.
@@ -28,11 +28,10 @@ void main() {
 
 const char g_fragment_shader[] = R"(
 #version 120
-varying in vec2 frag_tex_coord;
-varying out vec4 color;
+varying vec2 frag_tex_coord;
 uniform sampler2D color_texture;
 void main() {
-    color = texture2D(color_texture, frag_tex_coord);
+    gl_FragColor = texture2D(color_texture, frag_tex_coord);
 }
 )";
 
