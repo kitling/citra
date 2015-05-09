@@ -187,11 +187,7 @@ void RendererOpenGL::InitOpenGLObjects() {
     // Generate VBO handle for drawing
     glGenBuffers(1, &vertex_buffer_handle);
 
-    // Generate VAO
-    glGenVertexArrays(1, &vertex_array_handle);
-    glBindVertexArray(vertex_array_handle);
-
-    // Attach vertex data to VAO
+    // Attach vertex data to VBO
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle);
     glBufferData(GL_ARRAY_BUFFER, sizeof(ScreenRectVertex) * 4, nullptr, GL_STREAM_DRAW);
     glVertexAttribPointer(attrib_position,  2, GL_FLOAT, GL_FALSE, sizeof(ScreenRectVertex), (GLvoid*)offsetof(ScreenRectVertex, position));

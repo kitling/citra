@@ -153,10 +153,6 @@ typedef unsigned int GLhandleARB;
 extern "C" {
 #endif /*__cplusplus*/
 
-extern int ogl_ext_ARB_vertex_array_object;
-
-#define GL_VERTEX_ARRAY_BINDING 0x85B5
-
 #define GL_2D 0x0600
 #define GL_2_BYTES 0x1407
 #define GL_3D 0x0601
@@ -1035,18 +1031,6 @@ extern int ogl_ext_ARB_vertex_array_object;
 #define GL_SRGB8 0x8C41
 #define GL_SRGB8_ALPHA8 0x8C43
 #define GL_SRGB_ALPHA 0x8C42
-
-#ifndef GL_ARB_vertex_array_object
-#define GL_ARB_vertex_array_object 1
-extern void (CODEGEN_FUNCPTR *_ptrc_glBindVertexArray)(GLuint);
-#define glBindVertexArray _ptrc_glBindVertexArray
-extern void (CODEGEN_FUNCPTR *_ptrc_glDeleteVertexArrays)(GLsizei, const GLuint *);
-#define glDeleteVertexArrays _ptrc_glDeleteVertexArrays
-extern void (CODEGEN_FUNCPTR *_ptrc_glGenVertexArrays)(GLsizei, GLuint *);
-#define glGenVertexArrays _ptrc_glGenVertexArrays
-extern GLboolean (CODEGEN_FUNCPTR *_ptrc_glIsVertexArray)(GLuint);
-#define glIsVertexArray _ptrc_glIsVertexArray
-#endif /*GL_ARB_vertex_array_object*/ 
 
 extern void (CODEGEN_FUNCPTR *_ptrc_glAccum)(GLenum, GLfloat);
 #define glAccum _ptrc_glAccum

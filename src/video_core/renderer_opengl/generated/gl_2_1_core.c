@@ -95,27 +95,6 @@ static PROC WinGetProcAddress(const char *name)
 	#endif
 #endif
 
-int ogl_ext_ARB_vertex_array_object = ogl_LOAD_FAILED;
-
-void (CODEGEN_FUNCPTR *_ptrc_glBindVertexArray)(GLuint) = NULL;
-void (CODEGEN_FUNCPTR *_ptrc_glDeleteVertexArrays)(GLsizei, const GLuint *) = NULL;
-void (CODEGEN_FUNCPTR *_ptrc_glGenVertexArrays)(GLsizei, GLuint *) = NULL;
-GLboolean (CODEGEN_FUNCPTR *_ptrc_glIsVertexArray)(GLuint) = NULL;
-
-static int Load_ARB_vertex_array_object()
-{
-  int numFailed = 0;
-  _ptrc_glBindVertexArray = (void (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glBindVertexArray");
-  if(!_ptrc_glBindVertexArray) numFailed++;
-  _ptrc_glDeleteVertexArrays = (void (CODEGEN_FUNCPTR *)(GLsizei, const GLuint *))IntGetProcAddress("glDeleteVertexArrays");
-  if(!_ptrc_glDeleteVertexArrays) numFailed++;
-  _ptrc_glGenVertexArrays = (void (CODEGEN_FUNCPTR *)(GLsizei, GLuint *))IntGetProcAddress("glGenVertexArrays");
-  if(!_ptrc_glGenVertexArrays) numFailed++;
-  _ptrc_glIsVertexArray = (GLboolean (CODEGEN_FUNCPTR *)(GLuint))IntGetProcAddress("glIsVertexArray");
-  if(!_ptrc_glIsVertexArray) numFailed++;
-  return numFailed;
-}
-
 void (CODEGEN_FUNCPTR *_ptrc_glAccum)(GLenum, GLfloat) = NULL;
 void (CODEGEN_FUNCPTR *_ptrc_glAlphaFunc)(GLenum, GLfloat) = NULL;
 void (CODEGEN_FUNCPTR *_ptrc_glBegin)(GLenum) = NULL;
@@ -1792,10 +1771,10 @@ typedef struct ogl_StrToExtMap_s
 } ogl_StrToExtMap;
 
 static ogl_StrToExtMap ExtensionMap[1] = {
-  {"GL_ARB_vertex_array_object", &ogl_ext_ARB_vertex_array_object, Load_ARB_vertex_array_object},
+  {"", NULL, NULL},
 };
 
-static int g_extensionMapSize = 1;
+static int g_extensionMapSize = 0;
 
 static ogl_StrToExtMap *FindExtEntry(const char *extensionName)
 {
@@ -1812,7 +1791,6 @@ static ogl_StrToExtMap *FindExtEntry(const char *extensionName)
 
 static void ClearExtensionVars()
 {
-  ogl_ext_ARB_vertex_array_object = ogl_LOAD_FAILED;
 }
 
 
