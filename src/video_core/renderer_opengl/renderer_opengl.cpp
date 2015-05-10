@@ -327,7 +327,7 @@ void RendererOpenGL::Init() {
     render_window->MakeCurrent();
 
     int err = ogl_LoadFunctions();
-    if (ogl_LOAD_SUCCEEDED != err) {
+    if (ogl_LOAD_FAILED == err) {
         LOG_CRITICAL(Render_OpenGL, "Failed to initialize GL functions! Exiting...");
         exit(-1);
     }
