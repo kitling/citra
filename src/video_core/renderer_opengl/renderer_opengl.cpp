@@ -18,6 +18,20 @@
 #include "video_core/renderer_opengl/gl_shaders.h"
 
 #include <algorithm>
+#include <GL/glu.h>
+#define GL_DEBUG() printOglError(__FILE__, __LINE__)
+
+int printOglError(char *file, int line)
+{
+    GLenum glErr = glGetError();
+    if (glErr != GL_NO_ERROR)
+    {
+        printf("glError in file %s @ line %d: %s\n",
+			     file, line, gluErrorString(glErr));
+        return 1;
+    }
+    return 0;
+}
 
 /**
  * Vertex structure that the drawn screen rectangles are composed of.
@@ -139,8 +153,8 @@ void RendererOpenGL::LoadFBToActiveGLTexture(const GPU::Regs::FramebufferConfig&
     // only allows rows to have a memory alignement of 4.
     ASSERT(pixel_stride % 4 == 0);
 
-    glBindTexture(GL_TEXTURE_2D, texture.handle);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)pixel_stride);
+    glBindTexture(GL_TEXTURE_2D, texture.handle); GL_DEBUG();
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, (GLint)pixel_stride); GL_DEBUG();
 
     // Update existing texture
     // TODO: Test what happens on hardware when you change the framebuffer dimensions so that they
@@ -148,10 +162,10 @@ void RendererOpenGL::LoadFBToActiveGLTexture(const GPU::Regs::FramebufferConfig&
     // TODO: Applications could theoretically crash Citra here by specifying too large
     //       framebuffer sizes. We should make sure that this cannot happen.
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, framebuffer.width, framebuffer.height,
-                    texture.gl_format, texture.gl_type, framebuffer_data);
+                    texture.gl_format, texture.gl_type, framebuffer_data); GL_DEBUG();
 
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0); GL_DEBUG();
+    glBindTexture(GL_TEXTURE_2D, 0); GL_DEBUG();
 }
 
 /**
@@ -161,55 +175,55 @@ void RendererOpenGL::LoadFBToActiveGLTexture(const GPU::Regs::FramebufferConfig&
  */
 void RendererOpenGL::LoadColorToActiveGLTexture(u8 color_r, u8 color_g, u8 color_b,
                                                 const TextureInfo& texture) {
-    glBindTexture(GL_TEXTURE_2D, texture.handle);
+  glBindTexture(GL_TEXTURE_2D, texture.handle); GL_DEBUG();
 
     u8 framebuffer_data[3] = { color_r, color_g, color_b };
 
     // Update existing texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, framebuffer_data);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, framebuffer_data); GL_DEBUG();
+    glBindTexture(GL_TEXTURE_2D, 0); GL_DEBUG();
 }
 
 /**
  * Initializes the OpenGL state and creates persistent objects.
  */
 void RendererOpenGL::InitOpenGLObjects() {
-    glClearColor(Settings::values.bg_red, Settings::values.bg_green, Settings::values.bg_blue, 0.0f);
-    glDisable(GL_DEPTH_TEST);
+    glClearColor(Settings::values.bg_red, Settings::values.bg_green, Settings::values.bg_blue, 0.0f); GL_DEBUG();
+    glDisable(GL_DEPTH_TEST); GL_DEBUG();
 
     // Link shaders and get variable locations
     program_id = ShaderUtil::LoadShaders(GLShaders::g_vertex_shader, GLShaders::g_fragment_shader);
-    uniform_modelview_matrix = glGetUniformLocation(program_id, "modelview_matrix");
-    uniform_color_texture = glGetUniformLocation(program_id, "color_texture");
-    attrib_position = glGetAttribLocation(program_id, "vert_position");
-    attrib_tex_coord = glGetAttribLocation(program_id, "vert_tex_coord");
+    uniform_modelview_matrix = glGetUniformLocation(program_id, "modelview_matrix"); GL_DEBUG();
+    uniform_color_texture = glGetUniformLocation(program_id, "color_texture"); GL_DEBUG();
+    attrib_position = glGetAttribLocation(program_id, "vert_position"); GL_DEBUG();
+    attrib_tex_coord = glGetAttribLocation(program_id, "vert_tex_coord"); GL_DEBUG();
 
     // Generate VBO handle for drawing
-    glGenBuffers(1, &vertex_buffer_handle);
+    glGenBuffers(1, &vertex_buffer_handle); GL_DEBUG();
 
     // Attach vertex data to VBO
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ScreenRectVertex) * 4, nullptr, GL_STREAM_DRAW);
-    glVertexAttribPointer(attrib_position,  2, GL_FLOAT, GL_FALSE, sizeof(ScreenRectVertex), (GLvoid*)offsetof(ScreenRectVertex, position));
-    glVertexAttribPointer(attrib_tex_coord, 2, GL_FLOAT, GL_FALSE, sizeof(ScreenRectVertex), (GLvoid*)offsetof(ScreenRectVertex, tex_coord));
-    glEnableVertexAttribArray(attrib_position);
-    glEnableVertexAttribArray(attrib_tex_coord);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle); GL_DEBUG();
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ScreenRectVertex) * 4, nullptr, GL_STREAM_DRAW); GL_DEBUG();
+    glVertexAttribPointer(attrib_position,  2, GL_FLOAT, GL_FALSE, sizeof(ScreenRectVertex), (GLvoid*)offsetof(ScreenRectVertex, position)); GL_DEBUG();
+    glVertexAttribPointer(attrib_tex_coord, 2, GL_FLOAT, GL_FALSE, sizeof(ScreenRectVertex), (GLvoid*)offsetof(ScreenRectVertex, tex_coord)); GL_DEBUG();
+    glEnableVertexAttribArray(attrib_position); GL_DEBUG();
+    glEnableVertexAttribArray(attrib_tex_coord); GL_DEBUG();
 
     // Allocate textures for each screen
     for (auto& texture : textures) {
-        glGenTextures(1, &texture.handle);
+        glGenTextures(1, &texture.handle); GL_DEBUG();
 
         // Allocation of storage is deferred until the first frame, when we
         // know the framebuffer size.
 
-        glBindTexture(GL_TEXTURE_2D, texture.handle);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, texture.handle); GL_DEBUG();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0); GL_DEBUG();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); GL_DEBUG();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); GL_DEBUG();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); GL_DEBUG();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); GL_DEBUG();
     }
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0); GL_DEBUG();
 }
 
 void RendererOpenGL::ConfigureFramebufferTexture(TextureInfo& texture,
@@ -260,9 +274,9 @@ void RendererOpenGL::ConfigureFramebufferTexture(TextureInfo& texture,
         UNIMPLEMENTED();
     }
 
-    glBindTexture(GL_TEXTURE_2D, texture.handle);
+    glBindTexture(GL_TEXTURE_2D, texture.handle); GL_DEBUG();
     glTexImage2D(GL_TEXTURE_2D, 0, internal_format, texture.width, texture.height, 0,
-            texture.gl_format, texture.gl_type, nullptr);
+		 texture.gl_format, texture.gl_type, nullptr); GL_DEBUG();
 }
 
 /**
@@ -276,10 +290,10 @@ void RendererOpenGL::DrawSingleScreenRotated(const TextureInfo& texture, float x
         ScreenRectVertex(x+w, y+h, 0.f, 1.f),
     };
 
-    glBindTexture(GL_TEXTURE_2D, texture.handle);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices.data());
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindTexture(GL_TEXTURE_2D, texture.handle); GL_DEBUG();
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_handle); GL_DEBUG();
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices.data()); GL_DEBUG();
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); GL_DEBUG();
 }
 
 /**
@@ -288,19 +302,19 @@ void RendererOpenGL::DrawSingleScreenRotated(const TextureInfo& texture, float x
 void RendererOpenGL::DrawScreens() {
     auto layout = render_window->GetFramebufferLayout();
 
-    glViewport(0, 0, layout.width, layout.height);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glViewport(0, 0, layout.width, layout.height); GL_DEBUG();
+    glClear(GL_COLOR_BUFFER_BIT); GL_DEBUG();
 
-    glUseProgram(program_id);
+    glUseProgram(program_id); GL_DEBUG();
 
     // Set projection matrix
     std::array<GLfloat, 3 * 2> ortho_matrix = MakeOrthographicMatrix((float)layout.width,
         (float)layout.height);
-    glUniformMatrix3x2fv(uniform_modelview_matrix, 1, GL_FALSE, ortho_matrix.data());
+    glUniformMatrix3x2fv(uniform_modelview_matrix, 1, GL_FALSE, ortho_matrix.data()); GL_DEBUG();
 
     // Bind texture in Texture Unit 0
-    glActiveTexture(GL_TEXTURE0);
-    glUniform1i(uniform_color_texture, 0);
+    glActiveTexture(GL_TEXTURE0); GL_DEBUG();
+    glUniform1i(uniform_color_texture, 0); GL_DEBUG();
 
     DrawSingleScreenRotated(textures[0], (float)layout.top_screen.left, (float)layout.top_screen.top,
         (float)layout.top_screen.GetWidth(), (float)layout.top_screen.GetHeight());

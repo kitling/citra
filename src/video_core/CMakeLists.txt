@@ -35,6 +35,7 @@ set(HEADERS
 create_directory_groups(${SRCS} ${HEADERS})
 
 add_library(video_core STATIC ${SRCS} ${HEADERS})
+target_link_libraries(video_core GLU)
 
 if (PNG_FOUND)
     target_link_libraries(video_core ${PNG_LIBRARIES})
