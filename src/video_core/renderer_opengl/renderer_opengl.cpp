@@ -26,7 +26,7 @@ int printOglError(char *file, int line)
     GLenum glErr = glGetError();
     if (glErr != GL_NO_ERROR)
     {
-        printf("glError in file %s @ line %d: %s\n",
+        LOG_ERROR(Render_OpenGL, "glError in file %s @ line %d: %s\n",
 			     file, line, gluErrorString(glErr));
         return 1;
     }
