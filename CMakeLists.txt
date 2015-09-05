@@ -168,6 +168,13 @@ ENDIF (APPLE)
 
 option(ENABLE_QT "Enable the Qt frontend" ON)
 option(CITRA_FORCE_QT4 "Use Qt4 even if Qt5 is available." OFF)
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    option(LINUX "Private" ON)
+else ()
+    option(LINUX "Private" OFF)
+endif ()
+
 if (ENABLE_QT)
     # Set CMAKE_PREFIX_PATH if QTDIR is defined in the environment This allows CMake to
     # automatically find the Qt packages on Windows
@@ -232,7 +239,7 @@ add_subdirectory(src)
 # http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 # http://standards.freedesktop.org/icon-theme-spec/icon-theme-spec-latest.html
 # http://standards.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux|FreeBSD|OpenBSD|NetBSD")
+if(LINUX OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD|OpenBSD|NetBSD")
     install(FILES "${CMAKE_SOURCE_DIR}/dist/citra.desktop"
             DESTINATION "${CMAKE_INSTALL_PREFIX}/share/applications")
     install(FILES "${CMAKE_SOURCE_DIR}/dist/citra.svg"
