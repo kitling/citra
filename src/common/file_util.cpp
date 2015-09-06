@@ -420,9 +420,7 @@ bool CreateEmptyFile(const std::string &filename)
 }
 
 
-// Scans the directory tree gets, starting from _Directory and adds the
-// results into parentEntry. Returns the number of files+directories found
-u32 ScanDirectoryTree(const std::string &directory, FSTEntry& parentEntry)
+u32 ReadDirectory(const std::string& directory, FSTEntry& parentEntry, int recursion)
 {
     LOG_TRACE(Common_Filesystem, "directory %s", directory.c_str());
     // How many files + directories we found
@@ -467,12 +465,14 @@ u32 ScanDirectoryTree(const std::string &directory, FSTEntry& parentEntry)
         if (IsDirectory(entry.physicalName.c_str()))
         {
             entry.isDirectory = true;
-            // is a directory, lets go inside
-            entry.size = ScanDirectoryTree(entry.physicalName, entry);
-            foundEntries += (u32)entry.size;
+            if (recursion > 0)
+            {
+                entry.size = ReadDirectory(entry.physicalName, entry, recursion - 1);
+                foundEntries += (u32)entry.size;
+            }
         }
         else
-        { // is a file
+        {
             entry.isDirectory = false;
             entry.size = GetSize(entry.physicalName.c_str());
         }

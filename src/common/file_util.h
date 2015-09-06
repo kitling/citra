@@ -96,9 +96,15 @@ bool Copy(const std::string &srcFilename, const std::string &destFilename);
 // creates an empty file filename, returns true on success
 bool CreateEmptyFile(const std::string &filename);
 
-// Scans the directory tree gets, starting from _Directory and adds the
-// results into parentEntry. Returns the number of files+directories found
-u32 ScanDirectoryTree(const std::string &directory, FSTEntry& parentEntry);
+/**
+ * Reads the contents of a directory, and adds the results into
+ * parentEntry, optionally going down up to recursion levels.
+ * @param directory Path of the directory to scan.
+ * @param parentEntry Structure into which found files will be put.
+ * @param recursion Number of children directory to read before giving up.
+ * @returns u32 The number of files+directories found.
+ */
+u32 ReadDirectory(const std::string& directory, FSTEntry& parentEntry, int recursion = 0);
 
 // deletes the given directory and anything under it. Returns true on success.
 bool DeleteDirRecursively(const std::string &directory);

@@ -144,7 +144,7 @@ DiskDirectory::DiskDirectory(const DiskArchive& archive, const Path& path) {
 bool DiskDirectory::Open() {
     if (!FileUtil::IsDirectory(path))
         return false;
-    FileUtil::ScanDirectoryTree(path, directory);
+    FileUtil::ReadDirectory(path, directory);
     children_iterator = directory.children.begin();
     return true;
 }
